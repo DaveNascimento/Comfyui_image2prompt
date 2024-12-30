@@ -73,7 +73,13 @@ class Image2Text:
             "required": {
                 "model": ("IMAGE2TEXT_MODEL", ),
                 "image": ("IMAGE", "IMAGE_URL"),
-                "query": (["Describe this photograph.","What is this?","Please describe this image in detail.",cls.QUERY_EXPERT_TAGS], {
+                "query": ("COMBO", {
+                    "choices": [
+                        "Describe this photograph.",
+                        "What is this?",
+                        "Please describe this image in detail.",
+                        cls.QUERY_EXPERT_TAGS
+                    ],
                     "default": "What is this?",
                     "multiline": True,
                 }),
@@ -82,8 +88,7 @@ class Image2Text:
                     "multiline": True,
                 }),
                 "print_log": ("BOOLEAN", {
-                    "default": False,
-
+                    "default": True,
                 }),
             }
         }
