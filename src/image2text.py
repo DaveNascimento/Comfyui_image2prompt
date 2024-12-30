@@ -68,7 +68,7 @@ class Image2Text:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "model": ("IMAGE2TEXT_MODEL", ),
+                "model": ("IMAGE2TEXT_MODEL", {}),
                 "image": ("IMAGE", {"image_type": ["IMAGE", "IMAGE_URL"]}),
                 "query": (["Describe this photograph.", "What is this?", "Please describe this image in detail.", cls.QUERY_EXPERT_TAGS], {
                     "default": "What is this?",
@@ -125,13 +125,10 @@ class Image2TextWithTags:
             {
                 "score": ("BOOLEAN", {
                     "default": False,
-
                 }),
                 "remove_1girl": ("BOOLEAN", {
                     "default": True,
-
                 }),
-
             },
         )
         return result
