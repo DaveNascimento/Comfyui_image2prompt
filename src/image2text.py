@@ -69,7 +69,7 @@ class Image2Text:
         return {
             "required": {
                 "model": ("IMAGE2TEXT_MODEL", ),
-                "image": ("IMAGE", "IMAGE_URL"),
+                "image": ("IMAGE", {"image_type": ["IMAGE", "IMAGE_URL"]}),
                 "query": (["Describe this photograph.", "What is this?", "Please describe this image in detail.", cls.QUERY_EXPERT_TAGS], {
                     "default": "What is this?",
                     "multiline": True,
@@ -80,7 +80,6 @@ class Image2Text:
                 }),
                 "print_log": ("BOOLEAN", {
                     "default": False,
-
                 }),
             }
         }
