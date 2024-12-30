@@ -20,23 +20,17 @@ class LoadImage2TextModel:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "model": ("COMBO", {
-                    "choices": [
-                        "moondream1",
-                        "moondream2",
-                        "bunny-llama3-8b-v",
-                        "internlm-xcomposer2-vl-7b",
-                        "uform-qwen",
-                        "wd-swinv2-tagger-v3",
-                        "deepseek-vl-1.3b-chat",
-                        "deepseek-vl-7b-chat"
-                    ],
-                    "default": "moondream2"
-                }),
-                "device": ("COMBO", {
-                    "choices": ["cpu", "cuda"],
-                    "default": "cuda"
-                }),
+                "model": ([
+                    "moondream1",
+                    "moondream2",
+                    "bunny-llama3-8b-v",
+                    "internlm-xcomposer2-vl-7b",
+                    "uform-qwen",
+                    "wd-swinv2-tagger-v3",
+                    "deepseek-vl-1.3b-chat",
+                    "deepseek-vl-7b-chat",
+                ], {"default": "moondream2"}),
+                "device": (["cpu", "cuda", ], {"default": "cuda"}),
                 "low_memory": ("BOOLEAN", {"default": False}),
             }
         }
@@ -76,13 +70,7 @@ class Image2Text:
             "required": {
                 "model": ("IMAGE2TEXT_MODEL", ),
                 "image": ("IMAGE", "IMAGE_URL"),
-                "query": ("COMBO", {
-                    "choices": [
-                        "Describe this photograph.",
-                        "What is this?",
-                        "Please describe this image in detail.",
-                        cls.QUERY_EXPERT_TAGS
-                    ],
+                "query": (["Describe this photograph.", "What is this?", "Please describe this image in detail.", cls.QUERY_EXPERT_TAGS], {
                     "default": "What is this?",
                     "multiline": True,
                 }),
@@ -91,7 +79,8 @@ class Image2Text:
                     "multiline": True,
                 }),
                 "print_log": ("BOOLEAN", {
-                    "default": True,
+                    "default": False,
+
                 }),
             }
         }
@@ -102,8 +91,6 @@ class Image2Text:
     CATEGORY = "fofo🐼/image2prompt"
 
     def get_value(self, model, image, query, custom_query, print_log):
-        print(f"[Image2Text] Starting processing with model: {model.name}")
-
         # Ensure custom queries are prioritized
         if len(custom_query) > 0:
             query = custom_query
@@ -112,6 +99,8 @@ class Image2Text:
         # Iterate over each batch of images
         with tqdm(total=len(image)) as pbar:
             for img in image:
+                # Convert Tensor to image
+
                 img = tensor2pil(img)
                 img = img.convert("RGB")
                 # Additional processing for specific models
@@ -120,11 +109,12 @@ class Image2Text:
 
                 result = model.answer_question(img, query)
                 if print_log:
-                    print(f"[Image2Text] Output: {result}")
+                    print(result)
                 # Call the answer_question method for each batch of images and add to the answers list
                 answers.append(result)
                 pbar.update(1)
 
+        # Return a list of strings, each corresponding to an answer for a batch
         return (answers,)
 
 
