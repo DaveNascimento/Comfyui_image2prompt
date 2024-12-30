@@ -9,7 +9,6 @@ from PIL import Image
 import numpy as np
 from .utils import remove_specific_patterns, tensor2pil
 from tqdm import tqdm
-from comfy.utils import log
 GLOBAL_WdV3Model = None
 
 
@@ -103,6 +102,8 @@ class Image2Text:
     CATEGORY = "fofo🐼/image2prompt"
 
     def get_value(self, model, image, query, custom_query, print_log):
+        print(f"[Image2Text] Starting processing with model: {model.name}")
+
         # Ensure custom queries are prioritized
         if len(custom_query) > 0:
             query = custom_query
@@ -119,8 +120,7 @@ class Image2Text:
 
                 result = model.answer_question(img, query)
                 if print_log:
-                    print(result)
-                    log.info(f"Image2Text output: {result}")
+                    print(f"[Image2Text] Output: {result}")
                 # Call the answer_question method for each batch of images and add to the answers list
                 answers.append(result)
                 pbar.update(1)
