@@ -2,20 +2,20 @@ class Translate2Chinese:
     def __init__(self):
         from .translate import Translater
         self.translate = Translater()
-        
+
         self.cache = {}
 
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "text": ("STRING",{"multiline": True} ),   
-                "cache": (["enable", "disable"], {"default": "enable"}),             
+                "text": ("STRING",{"multiline": True} ),
+                "cache": (["enable", "disable"], {"default": "enable"}),
                 "print_output": (["enable", "disable"], {"default": "enable"}),
 
             }
         }
-    
+
     RETURN_TYPES = ("STRING",)
     FUNCTION = "generate_text"
     CATEGORY = "fofo🐼/tools"
@@ -24,10 +24,10 @@ class Translate2Chinese:
 
         if text is None  or text == "":
             return ("",)
-        
+
         if text is not None:
             text = text.strip()
-        
+
         if cache == "enable" and text in self.cache:
             return (self.cache[text],)
         try:
@@ -39,7 +39,7 @@ class Translate2Chinese:
         if print_output == "enable":
             print(output)
         return (output,)
-    
+
 class ShowText:
     @classmethod
     def INPUT_TYPES(s):
@@ -53,7 +53,6 @@ class ShowText:
             },
         }
 
-    INPUT_IS_LIST = True
     RETURN_TYPES = ("STRING",)
     FUNCTION = "notify"
     OUTPUT_NODE = True
@@ -81,7 +80,7 @@ class ShowText:
 
         return {"ui": {"text": text}, "result": (text,)}
 
-    
+
 class TextBox:
     def __init__(self):
         pass
