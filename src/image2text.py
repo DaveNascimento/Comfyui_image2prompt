@@ -18,17 +18,23 @@ class LoadImage2TextModel:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "model": ([
-                    "moondream1",
-                    "moondream2", 
-                    "bunny-llama3-8b-v",
-                    "internlm-xcomposer2-vl-7b", 
-                    "uform-qwen",
-                    "wd-swinv2-tagger-v3",
-                    "deepseek-vl-1.3b-chat",
-                    "deepseek-vl-7b-chat",                    
-                    ], {"default": "moondream2"}),
-                "device": (["cpu", "cuda", ], {"default": "cuda"}),
+                "model": ("COMBO", {
+                    "choices": [
+                        "moondream1",
+                        "moondream2",
+                        "bunny-llama3-8b-v",
+                        "internlm-xcomposer2-vl-7b",
+                        "uform-qwen",
+                        "wd-swinv2-tagger-v3",
+                        "deepseek-vl-1.3b-chat",
+                        "deepseek-vl-7b-chat"
+                    ],
+                    "default": "moondream2"
+                }),
+                "device": ("COMBO", {
+                    "choices": ["cpu", "cuda"],
+                    "default": "cuda"
+                }),
                 "low_memory": ("BOOLEAN", {"default": False}),
             }
         }
@@ -38,8 +44,8 @@ class LoadImage2TextModel:
     FUNCTION = "get_model"
     CATEGORY = "fofo🐼/image2prompt"
 
-    def get_model(self, model, device, low_memory):       
-            
+    def get_model(self, model, device, low_memory):
+
         if model == 'internlm-xcomposer2-vl-7b':
             return (InternlmVLModle(device=device,low_memory=low_memory),)
         elif model == 'uform-qwen':
@@ -52,11 +58,11 @@ class LoadImage2TextModel:
             return (DeepseekVLModel(device=device,low_memory=low_memory,model_name=model), )
         elif model == "bunny-llama3-8b-v":
             return (Llama3vModel(device=device,low_memory=low_memory),)
-        
+
         return (MoondreamModel(device=device,low_memory=low_memory),)
-    
+
 class Image2Text:
-    QUERY_EXPERT_TAGS = """As an AI image tagging expert, please provide precise tags for these images to enhance CLIP model's understanding of the content. Employ succinct keywords or phrases, steering clear of elaborate sentences and extraneous conjunctions. Prioritize the tags by relevance. Your tags should capture key elements such as the main subject, setting, artistic style, composition, image quality, color tone, filter, and camera specifications, and any other tags crucial for the image. When tagging photos of people, include specific details like gender, nationality, attire, actions, pose, expressions, accessories, makeup, composition type, age, etc. For other image categories, apply appropriate and common descriptive tags as well. Recognize and tag any celebrities, well-known landmark or IPs if clearly featured in the image. Your tags should be accurate, non-duplicative, and within a 20-75 word count range. 
+    QUERY_EXPERT_TAGS = """As an AI image tagging expert, please provide precise tags for these images to enhance CLIP model's understanding of the content. Employ succinct keywords or phrases, steering clear of elaborate sentences and extraneous conjunctions. Prioritize the tags by relevance. Your tags should capture key elements such as the main subject, setting, artistic style, composition, image quality, color tone, filter, and camera specifications, and any other tags crucial for the image. When tagging photos of people, include specific details like gender, nationality, attire, actions, pose, expressions, accessories, makeup, composition type, age, etc. For other image categories, apply appropriate and common descriptive tags as well. Recognize and tag any celebrities, well-known landmark or IPs if clearly featured in the image. Your tags should be accurate, non-duplicative, and within a 20-75 word count range.
 """
     def __init__(self):
         pass
@@ -77,7 +83,7 @@ class Image2Text:
                 }),
                 "print_log": ("BOOLEAN", {
                     "default": False,
-                    
+
                 }),
             }
         }
@@ -97,13 +103,13 @@ class Image2Text:
         with tqdm(total=len(image)) as pbar:
             for img in image:
                 # Convert Tensor to image
-                
+
                 img = tensor2pil(img)
                 img = img.convert("RGB")
                 # Additional processing for specific models
                 if model.name == "internlm":
                     query = f"<ImageHere>{query}"
-                
+
                 result = model.answer_question(img, query)
                 if print_log:
                     print(result)
@@ -122,17 +128,17 @@ class Image2TextWithTags:
             {
                 "score": ("BOOLEAN", {
                     "default": False,
-                    
+
                 }),
                 "remove_1girl": ("BOOLEAN", {
                     "default": True,
-                    
+
                 }),
 
             },
-        ) 
+        )
         return result
-    
+
     OUTPUT_IS_LIST = (True,True,True)
     RETURN_TYPES = ("STRING", "STRING", "STRING")
     RETURN_NAMES = ('FULL PROMPT', "PROMPT", "TAGS")
@@ -144,10 +150,10 @@ class Image2TextWithTags:
         if GLOBAL_WdV3Model is None:
             GLOBAL_WdV3Model=WdV3Model(device="cpu",low_memory=False)
 
-        
+
         result2 =  Image2Text().get_value(GLOBAL_WdV3Model, image, query, "score" if score is True else "",print_log)
-        
-            
+
+
         result1 =  Image2Text().get_value(model, image, query, custom_query,print_log)
         output = []
         for r1 in result1[0]:
@@ -157,7 +163,7 @@ class Image2TextWithTags:
                 output.append(f"{r1}\n\n{r2}")
 
         return (output, result1[0], result2[0])
-    
+
 
 
 
