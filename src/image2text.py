@@ -50,6 +50,7 @@ class LoadImage2TextModel:
         elif model == "wd-swinv2-tagger-v3":
             return (WdV3Model(device=device, low_memory=low_memory),)
         elif model == "deepseek-vl-1.3b-chat" or model == "deepseek-vl-7b-chat":
+            print(f"Loading {model} model")
             return (DeepseekVLModel(device=device, low_memory=low_memory, model_name=model), )
         elif model == "bunny-llama3-8b-v":
             return (Llama3vModel(device=device, low_memory=low_memory),)
@@ -68,8 +69,8 @@ class Image2Text:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "model": ("IMAGE2TEXT_MODEL", {}),
-                "image": ("IMAGE", {"image_type": ["IMAGE", "IMAGE_URL"]}),
+                "model": ("IMAGE2TEXT_MODEL", ),
+                "image": ("IMAGE",),
                 "query": (["Describe this photograph.", "What is this?", "Please describe this image in detail.", cls.QUERY_EXPERT_TAGS], {
                     "default": "What is this?",
                     "multiline": True,
@@ -80,6 +81,7 @@ class Image2Text:
                 }),
                 "print_log": ("BOOLEAN", {
                     "default": False,
+
                 }),
             }
         }
@@ -125,10 +127,13 @@ class Image2TextWithTags:
             {
                 "score": ("BOOLEAN", {
                     "default": False,
+
                 }),
                 "remove_1girl": ("BOOLEAN", {
                     "default": True,
+
                 }),
+
             },
         )
         return result
